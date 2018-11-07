@@ -26,30 +26,52 @@ PreparationH();
 
 %%%%%%%%%%%%%%%%%%%%%%
 %%% Transformation %%% %dure trop longtemps (9.5 sec) -> accélérer.
-for height = 0:info_base.Height
-    for width = 0:info_base.Width
-        a = [width;height;1];
-        b = H \ a;
-        pixel_ajout_x = b(1)/b(3); pixel_ajout_x = fix(pixel_ajout_x);
-        pixel_ajout_y = b(2)/b(3); pixel_ajout_y = fix(pixel_ajout_y);
+% for height = 0:info_base.Height
+%     for width = 0:info_base.Width
+%         a = [width;height;1];
+%         b = H \ a;
+%         pixel_ajout_x = b(1)/b(3); pixel_ajout_x = fix(pixel_ajout_x);
+%         pixel_ajout_y = b(2)/b(3); pixel_ajout_y = fix(pixel_ajout_y);
+%         if ( (pixel_ajout_x < info_ajout.Width) && (pixel_ajout_x > 0) && (pixel_ajout_y < info_ajout.Height) && (pixel_ajout_y > 0) )
+%             if (pixel_ajout_x > x_ajout_quart)%if pixel image ajout in last quarter
+%                 if ( (image1_base(height,width,3) > 115) && (image1_base(height,width,2) > 115 )  ) %if pixel image base in seuil couleur non main ( NOIR si c'est la FEUILLE)
+%                     image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
+%                     image1_base(height,width,2) = image1_ajout(pixel_ajout_y,pixel_ajout_x,2);
+%                     image1_base(height,width,3) = image1_ajout(pixel_ajout_y,pixel_ajout_x,3);
+%                 % else c'est la main donc on ne change pas
+%                 end
+%             else
+%                 image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
+%                 image1_base(height,width,2) = image1_ajout(pixel_ajout_y,pixel_ajout_x,2);
+%                 image1_base(height,width,3) = image1_ajout(pixel_ajout_y,pixel_ajout_x,3);
+%             end
+%         end
+%     end
+% end
+
+w = 1:1920;
+h = (1:1080)';
+X = repmat(w,1080,1); X = X(:)';
+Y = repmat(h,1,1920); Y = Y(:)';
+S = ones(1,1920*1080);
+coord_base = [X;Y;S];
+
+coord_ajout = H * coord_base;
+coord_ajout = [coord_ajout(1,:)./coord_ajout(3,:);coord_ajout(2,:)./coord_ajout(3,:)];
+coord_ajout = fix(coord_ajout);
+
+test = 1;
+
+for width = 1:info_base.Width
+    for height = 1:info_base.Height
+        pixel_ajout_x = coord_ajout(1,1+((width-1)*info_base.Height)); %(1,(height+((info_base.Height*(height-1)))));
+        pixel_ajout_y = coord_ajout(2,(height+(width-1)*info_base.Height));
         if ( (pixel_ajout_x < info_ajout.Width) && (pixel_ajout_x > 0) && (pixel_ajout_y < info_ajout.Height) && (pixel_ajout_y > 0) )
-            if (pixel_ajout_x > x_ajout_quart)%if pixel image ajout in last quarter
-                %ajouter un seuillage pour le R à < 100
-                if ( (image1_base(height,width,3) > 115) && (image1_base(height,width,2) > 115 )  ) %if pixel image base in seuil couleur non main ( NOIR si c'est la FEUILLE)
-                    image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
-                    image1_base(height,width,2) = image1_ajout(pixel_ajout_y,pixel_ajout_x,2);
-                    image1_base(height,width,3) = image1_ajout(pixel_ajout_y,pixel_ajout_x,3);
-                % else c'est la main donc on ne change pas
-                end
-            else
-                image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
-                image1_base(height,width,2) = image1_ajout(pixel_ajout_y,pixel_ajout_x,2);
-                image1_base(height,width,3) = image1_ajout(pixel_ajout_y,pixel_ajout_x,3);
-            end
+            test = 2;
+            image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
         end
     end
 end
-
 
 %%%%%%%%%%%%%%%%%%%
 %%% HandRemoval %%%
