@@ -34,7 +34,6 @@ for height = 0:info_base.Height
         pixel_ajout_y = b(2)/b(3); pixel_ajout_y = fix(pixel_ajout_y);
         if ( (pixel_ajout_x < info_ajout.Width) && (pixel_ajout_x > 0) && (pixel_ajout_y < info_ajout.Height) && (pixel_ajout_y > 0) )
             if (pixel_ajout_x > x_ajout_quart)%if pixel image ajout in last quarter
-                %ajouter un seuillage pour le R à < 100
                 if ( (image1_base(height,width,3) > 115) && (image1_base(height,width,2) > 115 )  ) %if pixel image base in seuil couleur non main ( NOIR si c'est la FEUILLE)
                     image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
                     image1_base(height,width,2) = image1_ajout(pixel_ajout_y,pixel_ajout_x,2);
