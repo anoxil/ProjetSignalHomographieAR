@@ -1,10 +1,6 @@
 clear all
 close all
 
-
-InitialisationDonnees();
-PreparationH();
-
 % Seuillage :
 % 
 %  FEUILLE
@@ -24,31 +20,94 @@ PreparationH();
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%
-%%% Transformation %%% %dure trop longtemps (9.5 sec) -> accélérer.
-% for height = 0:info_base.Height
-%     for width = 0:info_base.Width
-%         a = [width;height;1];
-%         b = H \ a;
-%         pixel_ajout_x = b(1)/b(3); pixel_ajout_x = fix(pixel_ajout_x);
-%         pixel_ajout_y = b(2)/b(3); pixel_ajout_y = fix(pixel_ajout_y);
-%         if ( (pixel_ajout_x < info_ajout.Width) && (pixel_ajout_x > 0) && (pixel_ajout_y < info_ajout.Height) && (pixel_ajout_y > 0) )
-%             if (pixel_ajout_x > x_ajout_quart)%if pixel image ajout in last quarter
-%                 if ( (image1_base(height,width,3) > 115) && (image1_base(height,width,2) > 115 )  ) %if pixel image base in seuil couleur non main ( NOIR si c'est la FEUILLE)
-%                     image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
-%                     image1_base(height,width,2) = image1_ajout(pixel_ajout_y,pixel_ajout_x,2);
-%                     image1_base(height,width,3) = image1_ajout(pixel_ajout_y,pixel_ajout_x,3);
-%                 % else c'est la main donc on ne change pas
-%                 end
-%             else
-%                 image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
-%                 image1_base(height,width,2) = image1_ajout(pixel_ajout_y,pixel_ajout_x,2);
-%                 image1_base(height,width,3) = image1_ajout(pixel_ajout_y,pixel_ajout_x,3);
-%             end
-%         end
-%     end
-% end
 
+
+
+
+% 1.928 sec
+% InitialisationDonnees();
+
+vidbase=VideoReader('videobase.mp4'); %lecture de la vidéo
+vidajout=VideoReader('videoajout.mp4'); %lecture de la vidéo
+image1_base=read(vidbase,37);
+image1_ajout=read(vidajout,500);
+
+info_base=get(vidbase);
+% base_x1 = x(1);
+% base_y1 = y(1);
+% base_x2 = x(2);
+% base_y2 = y(2);
+% base_x3 = x(3);
+% base_y3 = y(3);
+% base_x4 = x(4);
+% base_y4 = y(4);
+
+base_x1 = 683.7500;
+base_y1 = 412.2500;
+base_x2 = fix(1.3363e+03);
+base_y2 = fix(233.7500);
+base_x3 = 629.7500;
+base_y3 = 764.7500;
+base_x4 = fix(1.4278e+03);
+base_y4 = fix(581.7500);
+
+info_ajout=get(vidajout);
+ajout_x1 = 0;
+ajout_y1 = 0;
+ajout_x2 = info_ajout.Width;
+ajout_y2 = 0;
+ajout_x3 = 0;
+ajout_y3 = info_ajout.Height;
+ajout_x4 = info_ajout.Width;
+ajout_y4 = info_ajout.Height;
+
+% ajout_x1 = 0;
+% ajout_y1 = 0;
+% ajout_x2 = 1920;
+% ajout_y2 = 0;
+% ajout_x3 = 0;
+% ajout_y3 = 1080;
+% ajout_x4 = 1920;
+% ajout_y4 = 1080;
+
+x_ajout_quart = fix(ajout_x2 - ((ajout_x2 - ajout_x1)/4));
+
+
+
+
+
+
+
+% 0.006 sec
+% PreparationH();
+
+Hcalculator = [ajout_x1, ajout_y1, 1, 0, 0, 0, -ajout_x1*base_x1, -ajout_y1*base_x1;
+                0, 0, 0, ajout_x1, ajout_y1, 1, -ajout_x1*base_y1, -ajout_y1*base_y1;
+                ajout_x2, ajout_y2, 1, 0, 0, 0, -ajout_x2*base_x2, -ajout_y2*base_x2;
+                0, 0, 0, ajout_x2, ajout_y2, 1, -ajout_x2*base_y2, -ajout_y2*base_y2;
+                ajout_x3, ajout_y3, 1, 0, 0, 0, -ajout_x3*base_x3, -ajout_y3*base_x3;
+                0, 0, 0, ajout_x3, ajout_y3, 1, -ajout_x3*base_y3, -ajout_y3*base_y3;
+                ajout_x4, ajout_y4, 1, 0, 0, 0, -ajout_x4*base_x4, -ajout_y4*base_x4;
+                0, 0, 0, ajout_x4, ajout_y4, 1, -ajout_x4*base_y4, -ajout_y4*base_y4];
+
+Xbase = [base_x1; base_y1; base_x2; base_y2; base_x3; base_y3; base_x4; base_y4];
+
+Hcolumn = Hcalculator \ Xbase;
+H = [Hcolumn(1), Hcolumn(2), Hcolumn(3);
+    Hcolumn(4), Hcolumn(5), Hcolumn(6);
+    Hcolumn(7), Hcolumn(8), 1];
+
+
+
+
+
+
+
+
+
+%%REMPLACEMENT
+
+% 0.044 sec
 w = 1:1920;
 h = (1:1080)';
 X = repmat(w,1080,1); X = X(:)';
@@ -57,80 +116,34 @@ S = ones(1,1920*1080);
 coord_base = [X;Y;S];
 
 
+% 0.118 sec
 coord_ajout = H \ coord_base;
 coord_ajout_inter = [coord_ajout(1,:)./coord_ajout(3,:);coord_ajout(2,:)./coord_ajout(3,:)];
 coord_ajout_inter = fix(coord_ajout_inter);
 index = find( ( (coord_ajout_inter(1,:)<info_ajout.Width) .* (coord_ajout_inter(1,:)>0) ) .* ( (coord_ajout_inter(2,:)<info_ajout.Height) .* (coord_ajout_inter(2,:)>0) ) );
 
+
+% 0.072 sec
 for i = 1:length(index)
-   image1_base(Y(index(i)),X(index(i)),1) = image1_ajout(coord_ajout_inter(1,index(i)),coord_ajout_inter(2,index(i)),1);
-   image1_base(Y(index(i)),X(index(i)),2) = image1_ajout(coord_ajout_inter(1,index(i)),coord_ajout_inter(2,index(i)),2);
-   image1_base(Y(index(i)),X(index(i)),3) = image1_ajout(coord_ajout_inter(1,index(i)),coord_ajout_inter(2,index(i)),3);
+    if (coord_ajout_inter(1,index(i)) > x_ajout_quart)%if pixel image ajout in last quarter
+        if ( (image1_base(Y(index(i)),X(index(i)),3) > 115) && (image1_base(Y(index(i)),X(index(i)),2) > 115 )  )
+            image1_base(Y(index(i)),X(index(i)),1) = image1_ajout(coord_ajout_inter(2,index(i)),coord_ajout_inter(1,index(i)),1);
+            image1_base(Y(index(i)),X(index(i)),2) = image1_ajout(coord_ajout_inter(2,index(i)),coord_ajout_inter(1,index(i)),2);
+            image1_base(Y(index(i)),X(index(i)),3) = image1_ajout(coord_ajout_inter(2,index(i)),coord_ajout_inter(1,index(i)),3);
+        end
+    else
+        image1_base(Y(index(i)),X(index(i)),1) = image1_ajout(coord_ajout_inter(2,index(i)),coord_ajout_inter(1,index(i)),1);
+        image1_base(Y(index(i)),X(index(i)),2) = image1_ajout(coord_ajout_inter(2,index(i)),coord_ajout_inter(1,index(i)),2);
+        image1_base(Y(index(i)),X(index(i)),3) = image1_ajout(coord_ajout_inter(2,index(i)),coord_ajout_inter(1,index(i)),3);
+    end
 end
 
 
 
 
-% test = 1;
-% 
-% for width = 1:info_base.Width
-%     for height = 1:info_base.Height
-%         pixel_ajout_x = coord_ajout(1,1+((width-1)*info_base.Height)); %(1,(height+((info_base.Height*(height-1)))));
-%         pixel_ajout_y = coord_ajout(2,(height+(width-1)*info_base.Height));
-%         if ( (pixel_ajout_x < info_ajout.Width) && (pixel_ajout_x > 0) && (pixel_ajout_y < info_ajout.Height) && (pixel_ajout_y > 0) )
-%             test = 2;
-%             image1_base(height,width,1) = image1_ajout(pixel_ajout_y,pixel_ajout_x,1);
-%         end
-%     end
-% end
-
-%%%%%%%%%%%%%%%%%%%
-%%% HandRemoval %%%
 
 
 
 
-%imgPetite=image1(y(1):y(2),x(1):x(2),:);
-% shape = polyshape([1172 1336 1427 1227], [277 233 581 626]);
-% plot(shape)
-% %conversion en double pour faire les calculs, mieux qu'avec des entiers
-% image1=double(image1);
-% imgCrop=double(imgCrop);
-% figure, hold on
-% R=imgCrop(:,:,1);
-% plot(R,'r')
-% G=imgCrop(:,:,2);
-% plot(G,'g')
-% B=imgCrop(:,:,3);
-% plot(B,'b')
-% hold off
-% %Calcul de la moyenne
-% moyR=mean(R(:));
-% moyG=mean(G(:));
-% moyB=mean(B(:));
-% moy=[moyR;moyG;moyB];
-% %Calcul de la matrice de covariance
-% %%Calcul des covariances
-% covRR=mean(mean((R-moyR).*(R-moyR)));
-% covGG=mean(mean((G-moyG).*(G-moyG)));
-% covBB=mean(mean((B-moyB).*(B-moyB)));
-% covRB=mean(mean((R-moyR).*(B-moyB)));
-% covRG=mean(mean((R-moyR).*(G-moyG)));
-% covBG=mean(mean((B-moyB).*(G-moyG)));
-% %%Matrice des covariances
-% matcov=[covRR,covRG,covRB;covRG,covGG,covBG;covRB,covBG,covBB];
-% %Calcul de la matrice des covariances inverse
-% matcovInv=inv(matcov);
-% ImMaha=Mahalanobis(image1,moyR,moyG,moyB,matcovInv);
-% figure,imagesc(ImMaha),colorbar
-% %Seuil : Pour voir les pastilles
-% newImage=ImMaha<500;
-
-
-
-
-
-%%%%%%%%%%%%
-%%% Test %%%
-
-% figure, imshow(image1_base)
+% 0.294 sec
+figure, imshow(image1_base)
