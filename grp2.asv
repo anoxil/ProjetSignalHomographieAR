@@ -59,13 +59,10 @@ coord_base = [X;Y;S];
 
 coord_ajout = H \ coord_base;
 coord_ajout_inter = [coord_ajout(1,:)./coord_ajout(3,:);coord_ajout(2,:)./coord_ajout(3,:)];
-coord_ajout_inter = fix(coord_ajout_inter);
 index = find( ( (coord_ajout_inter(1,:)<info_ajout.Width) .* (coord_ajout_inter(1,:)>0) ) .* ( (coord_ajout_inter(2,:)<info_ajout.Height) .* (coord_ajout_inter(2,:)>0) ) );
 
 for i = 1:length(index)
-   image1_base(Y(index(i)),X(index(i)),1) = image1_ajout(coord_ajout_inter(1,index(i)),coord_ajout_inter(2,index(i)),1);
-   image1_base(Y(index(i)),X(index(i)),2) = image1_ajout(coord_ajout_inter(1,index(i)),coord_ajout_inter(2,index(i)),2);
-   image1_base(Y(index(i)),X(index(i)),3) = image1_ajout(coord_ajout_inter(1,index(i)),coord_ajout_inter(2,index(i)),3);
+   image1_base(Y(index(i)),X(index(i)),1) = image1_ajout(
 end
 
 
