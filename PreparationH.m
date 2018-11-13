@@ -1,13 +1,13 @@
-Hcalculator = [ajout_x1, ajout_y1, 1, 0, 0, 0, -ajout_x1*base_x1, -ajout_y1*base_x1;
-                0, 0, 0, ajout_x1, ajout_y1, 1, -ajout_x1*base_y1, -ajout_y1*base_y1;
-                ajout_x2, ajout_y2, 1, 0, 0, 0, -ajout_x2*base_x2, -ajout_y2*base_x2;
-                0, 0, 0, ajout_x2, ajout_y2, 1, -ajout_x2*base_y2, -ajout_y2*base_y2;
-                ajout_x3, ajout_y3, 1, 0, 0, 0, -ajout_x3*base_x3, -ajout_y3*base_x3;
-                0, 0, 0, ajout_x3, ajout_y3, 1, -ajout_x3*base_y3, -ajout_y3*base_y3;
-                ajout_x4, ajout_y4, 1, 0, 0, 0, -ajout_x4*base_x4, -ajout_y4*base_x4;
-                0, 0, 0, ajout_x4, ajout_y4, 1, -ajout_x4*base_y4, -ajout_y4*base_y4];
+Hcalculator = [X1add, Y1add, 1, 0, 0, 0, -X1add*X1base, -Y1add*X1base;
+                0, 0, 0, X1add, Y1add, 1, -X1add*Y1base, -Y1add*Y1base;
+                X2add, Y2add, 1, 0, 0, 0, -X2add*X2base, -Y2add*X2base;
+                0, 0, 0, X2add, Y2add, 1, -X2add*Y2base, -Y2add*Y2base;
+                X3add, Y3add, 1, 0, 0, 0, -X3add*X3base, -Y3add*X3base;
+                0, 0, 0, X3add, Y3add, 1, -X3add*Y3base, -Y3add*Y3base;
+                X4add, Y4add, 1, 0, 0, 0, -X4add*X4base, -Y4add*X4base;
+                0, 0, 0, X4add, Y4add, 1, -X4add*Y4base, -Y4add*Y4base];
 
-Xbase = [base_x1; base_y1; base_x2; base_y2; base_x3; base_y3; base_x4; base_y4];
+Xbase = [X1base; Y1base; X2base; Y2base; X3base; Y3base; X4base; Y4base];
 
 Hcolumn = Hcalculator \ Xbase;
 H = [Hcolumn(1), Hcolumn(2), Hcolumn(3);
