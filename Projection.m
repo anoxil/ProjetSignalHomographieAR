@@ -15,16 +15,12 @@ index = find( ( (add(1,:)<Wadd) .* (add(1,:)>0) ) .* ( (add(2,:)<Hadd) .* (add(2
 
 % 0.072 sec
 for i = 1:length(index)
-    if (add(1,index(i)) > Xadd_seuil) % if pixel image add in last quarter
-        if ( (Ibase(Y(index(i)),X(index(i)),3) > 115) && (Ibase(Y(index(i)),X(index(i)),2) > 115 )  )
-            Ibase(Y(index(i)),X(index(i)),1) = Iadd(add(2,index(i)),add(1,index(i)),1);
-            Ibase(Y(index(i)),X(index(i)),2) = Iadd(add(2,index(i)),add(1,index(i)),2);
-            Ibase(Y(index(i)),X(index(i)),3) = Iadd(add(2,index(i)),add(1,index(i)),3);
+    if (add(1,index(i)) > Xadd_seuil) % if pixel image add in the last quarter
+        if ( (Ibase(Y(index(i)),X(index(i)),3) > 115) && (Ibase(Y(index(i)),X(index(i)),2) > 115 )  ) % && if it's not the hand
+            ApplyHomography();
         end
-    else
-        Ibase(Y(index(i)),X(index(i)),1) = Iadd(add(2,index(i)),add(1,index(i)),1);
-        Ibase(Y(index(i)),X(index(i)),2) = Iadd(add(2,index(i)),add(1,index(i)),2);
-        Ibase(Y(index(i)),X(index(i)),3) = Iadd(add(2,index(i)),add(1,index(i)),3);
+    else % if pixel image add in the first three quarters
+            ApplyHomography();
     end
 end
 
