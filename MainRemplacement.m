@@ -2,21 +2,20 @@ clear all
 close all
 
 load('a.mat', 'C')
-Vbase=VideoReader('videobase.mp4'); %lecture de la vidéo
-Vadd=VideoReader('videoajout.mp4'); %lecture de la vidéo
+Vbase = VideoReader('videobase.mp4'); %lecture de la vidéo
+Vadd = VideoReader('videoajout.mp4'); %lecture de la vidéo
+Vwriter = VideoWriter('resultat.mp4','MPEG-4'); Vwriter.FrameRate = 24; open(Vwriter); %ecriture de la video
 
-
+% 2 secondes par image
 for Iindex = 1:(length(C)/2)
-    % 1.928 sec
+    
     Initialization();
 
-    % 0.006 sec
     PreparationH();
 
-    % 0.250 sec
     Projection();
 
-    % 0.294 sec
-    figure, imshow(Ibase)
+    writeVideo(Vwriter,Ibase);
+    
 end
-
+close(Vwriter);
