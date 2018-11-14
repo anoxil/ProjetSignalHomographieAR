@@ -1,7 +1,7 @@
 clear all
 close all
 
-tic
+%441 secondes --> 7min. 21s.
 load('a.mat', 'C')
 Vbase = VideoReader('videobase.mp4'); %lecture de la vidéo
 Vadd = VideoReader('videoajout.mp4'); %lecture de la vidéo
