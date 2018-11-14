@@ -1,6 +1,7 @@
 clear all
 close all
 
+tic
 load('a.mat', 'C')
 Vbase = VideoReader('videobase.mp4'); %lecture de la vidéo
 Vadd = VideoReader('videoajout.mp4'); %lecture de la vidéo
@@ -19,3 +20,4 @@ for Iindex = 1:(length(C)/2)
     
 end
 close(Vwriter);
+toc
